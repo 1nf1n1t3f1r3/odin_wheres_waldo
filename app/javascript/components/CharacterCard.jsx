@@ -13,14 +13,14 @@ export function CharacterCard({ name, imageSrc, isFound, timeFound }) {
         textAlign: "center",
       }}
     >
+      <p>
+        <strong>{name}</strong>
+      </p>
       <img
         src={imageSrc}
         alt={name}
         style={{ width: "100px", height: "auto" }}
       />
-      <p>
-        <strong>{name}</strong>
-      </p>
       <div>{isFound ? `Found in ${timeFound}s` : "Not found yet"}</div>
     </div>
   );
