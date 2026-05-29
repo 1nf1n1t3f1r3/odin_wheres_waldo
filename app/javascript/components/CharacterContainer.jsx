@@ -3,7 +3,7 @@
 import React from "react";
 import { CharacterCard } from "./CharacterCard.jsx";
 
-export function CharacterContainer({ characters }) {
+export function CharacterContainer({ characters, gameResult }) {
   return (
     <div
       className="character-container"
@@ -23,9 +23,9 @@ export function CharacterContainer({ characters }) {
 
       {/* Add all Found Times together */}
       <div style={{ marginTop: "15px", fontWeight: "bold" }}>
-        {/* {allFound
-          ? "Found all Characters in x time!"
-          : `Progress: ${foundCount}/${characters.length}`} */}
+        {gameResult.isOver
+          ? `There's Waldo! Found all characters in ${gameResult.finalScore} seconds!`
+          : `Where's Waldo?! Can you find him and his friends?`}
       </div>
     </div>
   );

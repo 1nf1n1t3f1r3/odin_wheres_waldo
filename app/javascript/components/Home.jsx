@@ -11,10 +11,14 @@ export default function Home() {
 
   const notificationTimerRef = useRef(null);
   const [notification, setNotification] = useState(null); // e.g., { x: 100, y: 200, text: "Found Waldo! 🎉" }
+  const [gameResult, setGameResult] = useState({
+    isOver: false,
+    finalScore: null,
+  });
 
-  // 📋 Initializing our array of character objects
-  const imageRef = useRef(null);
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
+
+  const imageRef = useRef(null);
   const [characters, setCharacters] = useState([
     {
       id: "waldo",
@@ -107,26 +111,6 @@ export default function Home() {
         `Clicked at X: ${percentX}%, Y: ${percentY}% and found ${foundCharacter.name} at ${foundCharacter.targetX}/${foundCharacter.targetY}! 🎉`,
       );
 
-      // Display a Notification. Set new Notification State
-      const displayNotification = () => {
-        // 1. Clear the previous timer using the ref id
-        clearTimeout(notificationTimerRef.current);
-
-        // 2. Set the new notification state
-        setNotification({
-          x: mouseCoords.x, // 🎯 Exact pixel column of the click
-          y: mouseCoords.y, // 🎯 Exact pixel row of the click
-          text: `Found ${foundCharacter.name} at ${foundCharacter.targetX}/${foundCharacter.targetY}!`,
-        });
-
-        // 3. Start a new timer and store its ID in the ref
-        notificationTimerRef.current = setTimeout(() => {
-          setNotification(null);
-        }, 10000);
-      };
-
-      displayNotification();
-
       // Update Characters
       const updatedCharacters = characters.map((char) => {
         if (char.id === foundCharacter.id) {
@@ -141,7 +125,7 @@ export default function Home() {
 
       setCharacters(updatedCharacters);
 
-      // 🏆 Check if every single character has been found
+      // Check if every single character has been found
       const isGameOver = updatedCharacters.every((char) => char.isFound);
 
       if (isGameOver) {
@@ -150,13 +134,41 @@ export default function Home() {
           parseFloat(char.timeFound),
         );
 
-        // 🏆 Find the highest number in that array
+        // Find the highest number in that array
         const finalScore = Math.max(...completionTimes);
 
-        console.log(`Game Over! Your final score is ${finalScore} seconds! 🏆`);
+        setGameResult({ isOver: true, finalScore: finalScore });
 
         // Next: Save this final score somewhere!
       }
+
+      // Display a Notification. Set new Notification State
+      const displayNotification = () => {
+        // 1. Clear the previous timer using the ref id
+        clearTimeout(notificationTimerRef.current);
+
+        // 2. Set the new notification state
+        if (isGameOver) {
+          setNotification({
+            x: mouseCoords.x, // 🎯 Exact pixel column of the click
+            y: mouseCoords.y, // 🎯 Exact pixel row of the click
+            text: `Found ${foundCharacter.name} at ${foundCharacter.targetX}/${foundCharacter.targetY}! You found them all!`,
+          });
+        } else {
+          setNotification({
+            x: mouseCoords.x, // 🎯 Exact pixel column of the click
+            y: mouseCoords.y, // 🎯 Exact pixel row of the click
+            text: `Found ${foundCharacter.name} at ${foundCharacter.targetX}/${foundCharacter.targetY}!`,
+          });
+        }
+
+        // 3. Start a new timer and store its ID in the ref
+        notificationTimerRef.current = setTimeout(() => {
+          setNotification(null);
+        }, 10000);
+      };
+
+      displayNotification();
     }
     // Or click nothing, and nothing happens
     else {
@@ -221,7 +233,7 @@ export default function Home() {
       ></div>
 
       <hr className="my-4" />
-      <CharacterContainer characters={characters} />
+      <CharacterContainer characters={characters} gameResult={gameResult} />
     </div>
   );
 }
