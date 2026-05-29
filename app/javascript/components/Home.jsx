@@ -9,6 +9,9 @@ export default function Home() {
   const startTimeRef = useRef(new Date());
   const TARGET_RADIUS = 40; // 🎯 Radius in pixels (half of the 80px circle)
 
+  const notificationTimerRef = useRef(null);
+  const [notification, setNotification] = useState(null); // e.g., { x: 100, y: 200, text: "Found Waldo! 🎉" }
+
   // 📋 Initializing our array of character objects
   const imageRef = useRef(null);
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
@@ -29,8 +32,8 @@ export default function Home() {
       imageSrc: "/images/wenda.webp",
       isFound: false,
       timeFound: null,
-      targetX: 11.1, // 🎯 Target percentage from left
-      targetY: 0.0, // 🎯 Target percentage from top
+      targetX: 77, // 🎯 Target percentage from left
+      targetY: 23.0, // 🎯 Target percentage from top
       tolerance: 0.01,
     },
     {
@@ -39,8 +42,8 @@ export default function Home() {
       imageSrc: "/images/wizard.webp",
       isFound: false,
       timeFound: null,
-      targetX: 15.2, // 🎯 Target percentage from left
-      targetY: 0.0, // 🎯 Target percentage from top
+      targetX: 27.0, // 🎯 Target percentage from left
+      targetY: 33.0, // 🎯 Target percentage from top
       tolerance: 0.01,
     },
     {
@@ -59,18 +62,17 @@ export default function Home() {
       imageSrc: "/images/woof.webp",
       isFound: false,
       timeFound: null,
-      targetX: 20.3, // 🎯 Target percentage from left
-      targetY: 0.0, // 🎯 Target percentage from top
+      targetX: 2.0, // 🎯 Target percentage from left
+      targetY: 90.0, // 🎯 Target percentage from top
       tolerance: 0.0,
     },
   ]);
 
+  // Grab the live pixel coordinates relative to the image and trade the Crosshair
   const handleMouseMove = (e) => {
-    // Grab the live pixel coordinates relative to the image
     const x = e.nativeEvent.offsetX;
     const y = e.nativeEvent.offsetY;
 
-    // Update our state so the circle can follow along
     setMouseCoords({ x, y });
   };
 
@@ -93,7 +95,9 @@ export default function Home() {
       const totalDistance = Math.sqrt(distX * distX + distY * distY);
 
       // Return true if the character falls inside the circle radius
-      return totalDistance <= radiusPercent;
+      if (!char.isFound) {
+        return totalDistance <= radiusPercent;
+      }
     });
 
     // Update Character with isFound and the time it took to find them, leaving the other suntouched
@@ -102,12 +106,34 @@ export default function Home() {
       console.log(
         `Clicked at X: ${percentX}%, Y: ${percentY}% and found ${foundCharacter.name} at ${foundCharacter.targetX}/${foundCharacter.targetY}! 🎉`,
       );
+
+      // Display a Notification. Set new Notification State
+      const displayNotification = () => {
+        // 1. Clear the previous timer using the ref id
+        clearTimeout(notificationTimerRef.current);
+
+        // 2. Set the new notification state
+        setNotification({
+          x: mouseCoords.x, // 🎯 Exact pixel column of the click
+          y: mouseCoords.y, // 🎯 Exact pixel row of the click
+          text: `Found ${foundCharacter.name} at ${foundCharacter.targetX}/${foundCharacter.targetY}!`,
+        });
+
+        // 3. Start a new timer and store its ID in the ref
+        notificationTimerRef.current = setTimeout(() => {
+          setNotification(null);
+        }, 10000);
+      };
+
+      displayNotification();
+
+      // Update Characters
       const updatedCharacters = characters.map((char) => {
         if (char.id === foundCharacter.id) {
           return {
             ...char,
             isFound: true,
-            timeFound: secondsElapsed.toFixed(1), // Cleanly formats to 1 decimal place (e.g., "14.3")
+            timeFound: secondsElapsed.toFixed(1),
           };
         }
         return char;
@@ -131,13 +157,21 @@ export default function Home() {
 
         // Next: Save this final score somewhere!
       }
-    } else {
+    }
+    // Or click nothing, and nothing happens
+    else {
       console.log(`Clicked at X: ${percentX}%, Y: ${percentY}%`);
     }
   };
 
   return (
-    <div style={{ position: "relative", display: "inline-block" }}>
+    <div
+      style={{
+        position: "relative",
+        display: "inline-block",
+        border: "3px solid black",
+      }}
+    >
       <img
         ref={imageRef}
         src="/images/waldo_beach.jpeg"
@@ -146,10 +180,32 @@ export default function Home() {
         onClick={handleImageClick}
         style={{
           cursor: "none",
-          border: "3px solid black",
-          // maxHeight: "100vh", // Restricting height so the container fits below
+          display: "block", // Removes baseline inline spacing
+          width: "100%", // Forces image to match container exactly
+          height: "auto",
         }}
       />
+
+      {notification && (
+        <div
+          style={{
+            position: "absolute",
+            left: `${notification.x}px`, // 🔌 Plug pixels right in
+            top: `${notification.y}px`, // 🔌 Plug pixels right in
+            transform: "translate(-50%, -130%)", // 🎈 Floats it perfectly above the click center
+            color: "green",
+            fontWeight: "bold",
+            backgroundColor: "white",
+            padding: "5px 10px",
+            borderRadius: "5px",
+            border: "2px solid green",
+            pointerEvents: "none",
+            zIndex: 10,
+          }}
+        >
+          {notification.text}
+        </div>
+      )}
 
       <div
         style={{
