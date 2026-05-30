@@ -72,6 +72,44 @@ export default function Home() {
     },
   ]);
 
+  // 1. Marks a specific character found in the array state
+  const markCharacterAsFound = (characterId, secondsElapsed) => {
+    const updated = characters.map((char) => {
+      if (char.id === characterId) {
+        return { ...char, isFound: true, timeFound: secondsElapsed.toFixed(1) };
+      }
+      return char;
+    });
+    setCharacters(updated);
+    return updated; // Returned immediately so game-over logic can read the fresh values
+  };
+
+  // 2. Evaluates if the game has ended and tracks the highest score
+  const checkAndProcessGameOver = (updatedCharacters) => {
+    const isGameOver = updatedCharacters.every((char) => char.isFound);
+    if (isGameOver) {
+      const completionTimes = updatedCharacters.map((char) =>
+        parseFloat(char.timeFound),
+      );
+      const finalScore = Math.max(...completionTimes);
+      setGameResult({ isOver: true, finalScore: finalScore });
+    }
+    return isGameOver;
+  };
+
+  // 3. Spawns the transient visual notification box above the click coordinates
+  const triggerNotification = (text) => {
+    clearTimeout(notificationTimerRef.current);
+    setNotification({
+      x: mouseCoords.x,
+      y: mouseCoords.y,
+      text: text,
+    });
+    notificationTimerRef.current = setTimeout(() => {
+      setNotification(null);
+    }, 10000);
+  };
+
   // Grab the live pixel coordinates relative to the image and trade the Crosshair
   const handleMouseMove = (e) => {
     const x = e.nativeEvent.offsetX;
@@ -81,98 +119,45 @@ export default function Home() {
   };
 
   const handleImageClick = () => {
+    // Get Width/Height, convert to Percentages
     const imageWidth = imageRef.current.clientWidth;
     const imageHeight = imageRef.current.clientHeight;
-
     const percentX = (mouseCoords.x / imageWidth) * 100;
     const percentY = (mouseCoords.y / imageHeight) * 100;
 
-    // 🔍 Look for a character that matches the click area
+    // 🔍 Find if the click hit any remaining targets using the Pythagorean theorem
     const foundCharacter = characters.find((char) => {
-      const radiusPercent = (TARGET_RADIUS / imageWidth) * 100;
+      if (char.isFound) return false;
 
-      // 📐 Calculate horizontal and vertical distances
+      const radiusPercent = (TARGET_RADIUS / imageWidth) * 100;
       const distX = percentX - char.targetX;
       const distY = percentY - char.targetY;
-
-      // 🎯 Pythagorean theorem: total straight-line distance squared
       const totalDistance = Math.sqrt(distX * distX + distY * distY);
 
-      // Return true if the character falls inside the circle radius
-      if (!char.isFound) {
-        return totalDistance <= radiusPercent;
-      }
+      return totalDistance <= radiusPercent;
     });
 
-    // Update Character with isFound and the time it took to find them, leaving the other suntouched
+    // 🎯 Process the matching hit
     if (foundCharacter) {
       const secondsElapsed = (new Date() - startTimeRef.current) / 1000;
-      console.log(
-        `Clicked at X: ${percentX}%, Y: ${percentY}% and found ${foundCharacter.name} at ${foundCharacter.targetX}/${foundCharacter.targetY}! 🎉`,
+
+      const updatedChars = markCharacterAsFound(
+        foundCharacter.id,
+        secondsElapsed,
+      );
+      const isGameOver = checkAndProcessGameOver(updatedChars);
+
+      triggerNotification(
+        isGameOver
+          ? `Found ${foundCharacter.name}! You found them all!`
+          : `Found ${foundCharacter.name}!`,
       );
 
-      // Update Characters
-      const updatedCharacters = characters.map((char) => {
-        if (char.id === foundCharacter.id) {
-          return {
-            ...char,
-            isFound: true,
-            timeFound: secondsElapsed.toFixed(1),
-          };
-        }
-        return char;
-      });
-
-      setCharacters(updatedCharacters);
-
-      // Check if every single character has been found
-      const isGameOver = updatedCharacters.every((char) => char.isFound);
-
-      if (isGameOver) {
-        // 🔢 Extract all timeFound values into a simple array of numbers
-        const completionTimes = updatedCharacters.map((char) =>
-          parseFloat(char.timeFound),
-        );
-
-        // Find the highest number in that array
-        const finalScore = Math.max(...completionTimes);
-
-        setGameResult({ isOver: true, finalScore: finalScore });
-
-        // Next: Save this final score somewhere!
-      }
-
-      // Display a Notification. Set new Notification State
-      const displayNotification = () => {
-        // 1. Clear the previous timer using the ref id
-        clearTimeout(notificationTimerRef.current);
-
-        // 2. Set the new notification state
-        if (isGameOver) {
-          setNotification({
-            x: mouseCoords.x, // 🎯 Exact pixel column of the click
-            y: mouseCoords.y, // 🎯 Exact pixel row of the click
-            text: `Found ${foundCharacter.name} at ${foundCharacter.targetX}/${foundCharacter.targetY}! You found them all!`,
-          });
-        } else {
-          setNotification({
-            x: mouseCoords.x, // 🎯 Exact pixel column of the click
-            y: mouseCoords.y, // 🎯 Exact pixel row of the click
-            text: `Found ${foundCharacter.name} at ${foundCharacter.targetX}/${foundCharacter.targetY}!`,
-          });
-        }
-
-        // 3. Start a new timer and store its ID in the ref
-        notificationTimerRef.current = setTimeout(() => {
-          setNotification(null);
-        }, 10000);
-      };
-
-      displayNotification();
-    }
-    // Or click nothing, and nothing happens
-    else {
-      console.log(`Clicked at X: ${percentX}%, Y: ${percentY}%`);
+      console.log(`🎉 Found ${foundCharacter.name} at backend equivalents!`);
+    } else {
+      console.log(
+        `Missed at X: ${percentX.toFixed(1)}%, Y: ${percentY.toFixed(1)}%`,
+      );
     }
   };
 
