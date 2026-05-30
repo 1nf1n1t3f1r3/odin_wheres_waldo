@@ -7,3 +7,21 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+beach_map = Map.create!(name: "Beach", image_url: "/images/waldo_beach.jpeg")
+space_map = Map.create!(name: "Space", image_url: "/images/waldo_troy.jpeg")
+
+# Characters for the Beach Map
+beach_map.characters.create!(name: "Waldo", target_x: 45.2, target_y: 23.1)
+beach_map.characters.create!(name: "Wenda", target_x: 77.0, target_y: 23.0)
+beach_map.characters.create!(name: "Wizard", target_x: 45.2, target_y: 23.1)
+beach_map.characters.create!(name: "Odlaw", target_x: 77.0, target_y: 23.0)
+beach_map.characters.create!(name: "Woof", target_x: 77.0, target_y: 23.0)
+
+
+# Characters for the Space Map
+space_map.characters.create!(name: "Waldo", target_x: 12.5, target_y: 88.3)
+space_map.characters.create!(name: "Wenda", target_x: 5.0, target_y: 41.2)
+beach_map.characters.create!(name: "Wizard", target_x: 45.2, target_y: 23.1)
+beach_map.characters.create!(name: "Odlaw", target_x: 77.0, target_y: 23.0)
+beach_map.characters.create!(name: "Woof", target_x: 77.0, target_y: 23.0)

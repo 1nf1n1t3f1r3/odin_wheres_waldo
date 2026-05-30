@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  target_x: 1.5
+  target_y: 1.5
+
+two:
+  name: MyString
+  target_x: 1.5
+  target_y: 1.5
