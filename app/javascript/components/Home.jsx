@@ -118,46 +118,50 @@ export default function Home() {
     setMouseCoords({ x, y });
   };
 
-  const handleImageClick = () => {
-    // Get Width/Height, convert to Percentages
+  const handleImageClick = async () => {
+    // 1. Get Width/Height, convert to Percentages exactly like before
     const imageWidth = imageRef.current.clientWidth;
     const imageHeight = imageRef.current.clientHeight;
     const percentX = (mouseCoords.x / imageWidth) * 100;
     const percentY = (mouseCoords.y / imageHeight) * 100;
 
-    // 🔍 Find if the click hit any remaining targets using the Pythagorean theorem
-    const foundCharacter = characters.find((char) => {
-      if (char.isFound) return false;
+    try {
+      // 📡 Pass the percentages to Rails instead of evaluating them locally
+      const response = await fetch("/api/v1/characters/validate_click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ x: percentX, y: percentY }),
+        map_id: 1, // 👈 Send the active map's database ID here!
+      });
 
-      const radiusPercent = (TARGET_RADIUS / imageWidth) * 100;
-      const distX = percentX - char.targetX;
-      const distY = percentY - char.targetY;
-      const totalDistance = Math.sqrt(distX * distX + distY * distY);
+      const data = await response.json();
 
-      return totalDistance <= radiusPercent;
-    });
+      // 🎯 Process the matching hit from the server response
+      if (data.found) {
+        // If we already found this character, do nothing
+        const localChar = characters.find((char) => char.id === data.id);
+        if (localChar && localChar.isFound) return;
 
-    // 🎯 Process the matching hit
-    if (foundCharacter) {
-      const secondsElapsed = (new Date() - startTimeRef.current) / 1000;
+        const secondsElapsed = (new Date() - startTimeRef.current) / 1000;
 
-      const updatedChars = markCharacterAsFound(
-        foundCharacter.id,
-        secondsElapsed,
-      );
-      const isGameOver = checkAndProcessGameOver(updatedChars);
+        // 🔥 Your exact helper logic, untouched!
+        const updatedChars = markCharacterAsFound(data.id, secondsElapsed);
+        const isGameOver = checkAndProcessGameOver(updatedChars);
 
-      triggerNotification(
-        isGameOver
-          ? `Found ${foundCharacter.name}! You found them all!`
-          : `Found ${foundCharacter.name}!`,
-      );
+        triggerNotification(
+          isGameOver
+            ? `Found ${data.name}! You found them all!`
+            : `Found ${data.name}!`,
+        );
 
-      console.log(`🎉 Found ${foundCharacter.name} at backend equivalents!`);
-    } else {
-      console.log(
-        `Missed at X: ${percentX.toFixed(1)}%, Y: ${percentY.toFixed(1)}%`,
-      );
+        console.log(`🎉 Found ${data.name} confirmed by the database!`);
+      } else {
+        console.log(
+          `Missed at X: ${percentX.toFixed(1)}%, Y: ${percentY.toFixed(1)}%`,
+        );
+      }
+    } catch (error) {
+      console.error("Network error validating click:", error);
     }
   };
 

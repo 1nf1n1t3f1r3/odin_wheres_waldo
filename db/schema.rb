@@ -10,16 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_30_121502) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_30_151600) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "characters", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.bigint "map_id", null: false
     t.string "name"
     t.float "target_x"
     t.float "target_y"
     t.datetime "updated_at", null: false
+    t.index ["map_id"], name: "index_characters_on_map_id"
   end
 
   create_table "maps", force: :cascade do |t|
@@ -31,8 +33,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_121502) do
 
   create_table "scores", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.bigint "map_id", null: false
     t.string "player_name"
     t.float "total_time"
     t.datetime "updated_at", null: false
+    t.index ["map_id"], name: "index_scores_on_map_id"
   end
+
+  add_foreign_key "characters", "maps"
+  add_foreign_key "scores", "maps"
 end
