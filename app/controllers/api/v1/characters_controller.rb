@@ -3,7 +3,7 @@ class Api::V1::CharactersController < ActionController::API
   def validate_click
     click_x = params[:x].to_f
     click_y = params[:y].to_f
-    tolerance = 3.0 # 🎯 3% radius circle
+    tolerance = 3 # 🎯 3% radius circle
 
     puts "======= DEBUGGING WALDO CLICK ======="
     puts "User clicked at: X: #{click_x}%, Y: #{click_y}%"

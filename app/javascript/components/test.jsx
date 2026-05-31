@@ -11,12 +11,6 @@ export function CharacterCard({ name, imageSrc, isFound, targetX, targetY }) {
     const horizontal = targetX < 50 ? "Left" : "Right";
     const vertical = targetY < 50 ? "Top" : "Bottom";
 
-    // 🐶 Check if this specific card belongs to Woof
-    if (name.toLowerCase() === "woof") {
-      return `Look around the ${vertical} ${horizontal} side... and remember, you're only looking for his red-and-white striped tail! 🐕🔍`;
-    }
-
-    // Default quadrant hint for Waldo, Wenda, etc.
     return `Look around the ${vertical} ${horizontal} side of the board!`;
   };
 
