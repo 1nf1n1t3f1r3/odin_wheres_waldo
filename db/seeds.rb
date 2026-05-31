@@ -15,11 +15,11 @@ beach_map = Map.create!(name: "Beach", image_url: "/images/waldo_beach.jpeg")
 space_map = Map.create!(name: "Space", image_url: "/images/waldo_troy.jpeg")
 
 # Characters for the Beach Map
-beach_map.characters.create!(name: "Waldo", target_x: 3.0, target_y: 3.0)
-beach_map.characters.create!(name: "Wenda", target_x: 77.0, target_y: 23.0)
-beach_map.characters.create!(name: "Wizard", target_x: 45.2, target_y: 23.1)
-beach_map.characters.create!(name: "Odlaw", target_x: 77.0, target_y: 23.0)
-beach_map.characters.create!(name: "Woof", target_x: 77.0, target_y: 23.0)
+beach_map.characters.create!(name: "Waldo", target_x: 65.0, target_y: 38.5)
+beach_map.characters.create!(name: "Wenda", target_x: 80.5, target_y: 42.0)
+beach_map.characters.create!(name: "Wizard", target_x: 30.0, target_y: 35.5)
+beach_map.characters.create!(name: "Odlaw", target_x: 14.0, target_y: 35.5)
+beach_map.characters.create!(name: "Woof", target_x: 71.0, target_y: 38.5)
 
 
 # Characters for the Space Map

@@ -26,9 +26,6 @@ export default function Home() {
       imageSrc: "/images/waldo.webp",
       isFound: false,
       timeFound: null,
-      targetX: 0.0, // 🎯 Target percentage from left
-      targetY: 0.0, // 🎯 Target percentage from top
-      tolerance: 0.1,
     },
     {
       id: "wenda",
@@ -36,9 +33,6 @@ export default function Home() {
       imageSrc: "/images/wenda.webp",
       isFound: false,
       timeFound: null,
-      targetX: 77, // 🎯 Target percentage from left
-      targetY: 23.0, // 🎯 Target percentage from top
-      tolerance: 0.01,
     },
     {
       id: "wizard",
@@ -46,9 +40,6 @@ export default function Home() {
       imageSrc: "/images/wizard.webp",
       isFound: false,
       timeFound: null,
-      targetX: 27.0, // 🎯 Target percentage from left
-      targetY: 33.0, // 🎯 Target percentage from top
-      tolerance: 0.01,
     },
     {
       id: "odlaw",
@@ -56,9 +47,6 @@ export default function Home() {
       imageSrc: "/images/odlaw.webp",
       isFound: false,
       timeFound: null,
-      targetX: 11, // 🎯 Target percentage from left
-      targetY: 33.5, // 🎯 Target percentage from top
-      tolerance: 0.0,
     },
     {
       id: "woof",
@@ -66,9 +54,6 @@ export default function Home() {
       imageSrc: "/images/woof.webp",
       isFound: false,
       timeFound: null,
-      targetX: 2.0, // 🎯 Target percentage from left
-      targetY: 90.0, // 🎯 Target percentage from top
-      tolerance: 0.0,
     },
   ]);
 
@@ -130,8 +115,11 @@ export default function Home() {
       const response = await fetch("/api/v1/characters/validate_click", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ x: percentX, y: percentY }),
-        map_id: 1, // 👈 Send the active map's database ID here!
+        body: JSON.stringify({
+          x: percentX,
+          y: percentY,
+          map_id: 9,
+        }),
       });
 
       const data = await response.json();
@@ -211,8 +199,8 @@ export default function Home() {
       <div
         style={{
           position: "absolute",
-          width: "80px",
-          height: "80px",
+          width: "25px",
+          height: "25px",
           border: "4px dashed red",
           borderRadius: "50%",
           pointerEvents: "none", // 🛑 Prevents the circle from blocking mouse events on the image

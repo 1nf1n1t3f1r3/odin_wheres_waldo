@@ -9,9 +9,9 @@ class Api::V1::CharactersController < ActionController::API
     puts "User clicked at: X: #{click_x}%, Y: #{click_y}%"
 
     # 🗺️ Scope the query to only check characters belonging to the active map!
-    # current_map = Map.find(params[:map_id])
+    current_map = Map.find(params[:map_id])
     # Temporary quick-fix in app/controllers/api/v1/characters_controller.rb
-    current_map = Map.find_by(name: "Beach") # Looks it up by name instead of params[:map_id]
+    # current_map = Map.find_by(name: "Beach") # Looks it up by name instead of params[:map_id]
 
     # 🔍 Scan all characters in the DB to see if any match the coordinates
     found_character = current_map.characters.find do |char|
