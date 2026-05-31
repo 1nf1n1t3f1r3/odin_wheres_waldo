@@ -5,7 +5,7 @@ class Api::V1::MapsController < ActionController::API
   end
 
   def show
-    map = Map.find(params[:id])
+    map = Map.find_by!(slug: params[:id])
     render json: map.to_json(include: :characters)
   end
 end

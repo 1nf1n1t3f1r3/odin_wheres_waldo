@@ -12,8 +12,8 @@
 
 Map.destroy_all # Keeps things clean if you run the script multiple times
 
-beach_map = Map.create!(name: "Beach", image_url: "/images/waldo_beach.jpeg")
-troy_map = Map.create!(name: "Troy", image_url: "/images/waldo_troy.jpeg")
+beach_map = Map.create!(name: "Beach", image_url: "/images/waldo_beach.jpeg", slug: "beach")
+troy_map = Map.create!(name: "Troy", image_url: "/images/waldo_troy.jpeg", slug: "troy")
 
 # Characters for the Beach Map
 beach_map.characters.create!(name: "Waldo", target_x: 65.0, target_y: 38.5)
@@ -24,11 +24,11 @@ beach_map.characters.create!(name: "Woof", target_x: 71.0, target_y: 38.5)
 
 
 # Characters for the Space Map
-troy_map.characters.create!(name: "Waldo", target_x: 12.5, target_y: 88.3)
-troy_map.characters.create!(name: "Wenda", target_x: 5.0, target_y: 41.2)
-troy_map.characters.create!(name: "Wizard", target_x: 45.2, target_y: 23.1)
-troy_map.characters.create!(name: "Odlaw", target_x: 77.0, target_y: 23.0)
-troy_map.characters.create!(name: "Woof", target_x: 77.0, target_y: 23.0)
+troy_map.characters.create!(name: "Waldo", target_x: 17.5, target_y: 86.0)
+troy_map.characters.create!(name: "Wenda", target_x: 76.5, target_y: 77.5)
+troy_map.characters.create!(name: "Wizard", target_x: 29.5, target_y: 14.5)
+troy_map.characters.create!(name: "Odlaw", target_x: 87.0, target_y: 83.0)
+troy_map.characters.create!(name: "Woof", target_x: 62.0, target_y: 71.5)
 
 puts "--- SEED VERIFICATION LOGS ---"
 puts "Beach Map saved with ID: #{beach_map.id}"

@@ -164,7 +164,7 @@ export default function Home() {
         style={{
           cursor: "none",
           display: "block",
-          width: "100%",
+          //   width: "100%", // Use while testing
           height: "auto",
         }}
       />

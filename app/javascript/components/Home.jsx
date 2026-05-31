@@ -19,7 +19,7 @@ export default function Home() {
         {maps.map((map) => (
           <Link
             key={map.id}
-            to={`/game/${map.id}`}
+            to={`/game/${map.slug}`}
             style={{ textDecoration: "none", color: "black" }}
           >
             <div
