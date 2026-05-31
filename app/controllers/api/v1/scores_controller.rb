@@ -18,7 +18,7 @@ class Api::V1::ScoresController < ActionController::API
     current_map = Map.find_by!(slug: params[:map_id])
 
     # Save the score using the time calculated in step 3!
-    score = map.scores.create!(
+    score = current_map.scores.create!(
       player_name: params[:player_name].upcase,
       total_time: session[:secure_score]
     )
