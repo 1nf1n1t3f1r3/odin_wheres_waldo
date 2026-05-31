@@ -3,10 +3,11 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { CharacterContainer } from "./CharacterContainer.jsx";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function Home() {
   const { mapId } = useParams(); // 👈 Grabs the ":mapId" parameter straight from the URL string
+  const [mapDetails, setMapDetails] = useState({ name: "", imageUrl: null });
 
   const startTimeRef = useRef(new Date());
   const TARGET_RADIUS = 40; // 🎯 Radius in pixels (half of the 80px circle)
@@ -21,45 +22,37 @@ export default function Home() {
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
 
   const imageRef = useRef(null);
-  const [characters, setCharacters] = useState([
-    {
-      id: "waldo",
-      name: "Waldo",
-      imageSrc: "/images/waldo.webp",
-      isFound: false,
-      timeFound: null,
-    },
-    {
-      id: "wenda",
-      name: "Wenda",
-      imageSrc: "/images/wenda.webp",
-      isFound: false,
-      timeFound: null,
-    },
-    {
-      id: "wizard",
-      name: "Wizard",
-      imageSrc: "/images/wizard.webp",
-      isFound: false,
-      timeFound: null,
-    },
-    {
-      id: "odlaw",
-      name: "Odlaw",
-      imageSrc: "/images/odlaw.webp",
-      isFound: false,
-      timeFound: null,
-    },
-    {
-      id: "woof",
-      name: "Woof",
-      imageSrc: "/images/woof.webp",
-      isFound: false,
-      timeFound: null,
-    },
-  ]);
+  const [characters, setCharacters] = useState([]);
 
-  // 1. Marks a specific character found in the array state
+  // Download map setup with mapId
+  useEffect(() => {
+    async function loadStage() {
+      try {
+        const response = await fetch(`/api/v1/maps/${mapId}`);
+        const data = await response.json();
+
+        setMapDetails({ name: data.name, imageUrl: data.image_url });
+
+        // Format database characters
+        const formatted = data.characters.map((char) => ({
+          id: char.name.toLowerCase(),
+          name: char.name,
+          imageSrc: `/images/${char.name.toLowerCase()}.webp`,
+          isFound: false,
+          timeFound: null,
+        }));
+
+        setCharacters(formatted);
+        startTimeRef.current = new Date(); // Start timer fresh for this stage!
+        setGameResult({ isOver: false, finalScore: null });
+      } catch (err) {
+        console.error("Error loading level assets:", err);
+      }
+    }
+    loadStage();
+  }, [mapId]);
+
+  // Mark a character found in the array state
   const markCharacterAsFound = (characterId, secondsElapsed) => {
     const updated = characters.map((char) => {
       if (char.id === characterId) {
@@ -71,7 +64,7 @@ export default function Home() {
     return updated; // Returned immediately so game-over logic can read the fresh values
   };
 
-  // 2. Evaluates if the game has ended and tracks the highest score
+  // Evaluate GameOver and track scores
   const checkAndProcessGameOver = (updatedCharacters) => {
     const isGameOver = updatedCharacters.every((char) => char.isFound);
     if (isGameOver) {
@@ -84,7 +77,7 @@ export default function Home() {
     return isGameOver;
   };
 
-  // 3. Spawns the transient visual notification box above the click coordinates
+  // Spawn notification box
   const triggerNotification = (text) => {
     clearTimeout(notificationTimerRef.current);
     setNotification({
@@ -97,7 +90,7 @@ export default function Home() {
     }, 10000);
   };
 
-  // Grab the live pixel coordinates relative to the image and trade the Crosshair
+  // Crosshair
   const handleMouseMove = (e) => {
     const x = e.nativeEvent.offsetX;
     const y = e.nativeEvent.offsetY;
@@ -113,7 +106,7 @@ export default function Home() {
     const percentY = (mouseCoords.y / imageHeight) * 100;
 
     try {
-      // 📡 Pass the percentages to Rails instead of evaluating them locally
+      // Pass percentages to Rails
       const response = await fetch("/api/v1/characters/validate_click", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -126,7 +119,7 @@ export default function Home() {
 
       const data = await response.json();
 
-      // 🎯 Process the matching hit from the server response
+      // Process matching hit from the server
       if (data.found) {
         // If we already found this character, do nothing
         const localChar = characters.find((char) => char.id === data.id);
@@ -134,7 +127,6 @@ export default function Home() {
 
         const secondsElapsed = (new Date() - startTimeRef.current) / 1000;
 
-        // 🔥 Your exact helper logic, untouched!
         const updatedChars = markCharacterAsFound(data.id, secondsElapsed);
         const isGameOver = checkAndProcessGameOver(updatedChars);
 
@@ -144,7 +136,7 @@ export default function Home() {
             : `Found ${data.name}!`,
         );
 
-        console.log(`🎉 Found ${data.name} confirmed by the database!`);
+        console.log(`Found ${data.name} confirmed by the database!`);
       } else {
         console.log(
           `Missed at X: ${percentX.toFixed(1)}%, Y: ${percentY.toFixed(1)}%`,
@@ -165,14 +157,14 @@ export default function Home() {
     >
       <img
         ref={imageRef}
-        src="/images/waldo_beach.jpeg"
+        src={mapDetails.imageUrl || "/images/waldo_beach.jpeg"}
         alt="Waldo Board"
         onMouseMove={handleMouseMove}
         onClick={handleImageClick}
         style={{
           cursor: "none",
-          display: "block", // Removes baseline inline spacing
-          width: "100%", // Forces image to match container exactly
+          display: "block",
+          width: "100%",
           height: "auto",
         }}
       />
@@ -181,9 +173,9 @@ export default function Home() {
         <div
           style={{
             position: "absolute",
-            left: `${notification.x}px`, // 🔌 Plug pixels right in
-            top: `${notification.y}px`, // 🔌 Plug pixels right in
-            transform: "translate(-50%, -130%)", // 🎈 Floats it perfectly above the click center
+            left: `${notification.x}px`,
+            top: `${notification.y}px`,
+            transform: "translate(-50%, -130%)",
             color: "green",
             fontWeight: "bold",
             backgroundColor: "white",
@@ -205,7 +197,7 @@ export default function Home() {
           height: "25px",
           border: "4px dashed red",
           borderRadius: "50%",
-          pointerEvents: "none", // 🛑 Prevents the circle from blocking mouse events on the image
+          pointerEvents: "none",
           left: `${mouseCoords.x - TARGET_RADIUS}px`,
           top: `${mouseCoords.y - TARGET_RADIUS}px`,
         }}

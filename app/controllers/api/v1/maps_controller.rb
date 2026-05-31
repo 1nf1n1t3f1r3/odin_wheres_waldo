@@ -5,8 +5,7 @@ class Api::V1::MapsController < ActionController::API
   end
 
   def show
-    # Find the map match ignoring case (e.g., "beach" matches "Beach")
-    map = Map.find_by!("LOWER(name) = ?", params[:id].downcase)
+    map = Map.find(params[:id])
     render json: map.to_json(include: :characters)
   end
 end

@@ -7,7 +7,7 @@ export default (
   <Router>
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/game/:mapSlug" element={<GameArena />} />
+      <Route path="/game/:mapId" element={<GameArena />} />
     </Routes>
   </Router>
 );

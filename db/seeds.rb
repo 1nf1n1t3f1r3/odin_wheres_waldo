@@ -1,3 +1,4 @@
+# db/seeds.rb
 # db/s
 # This file should ensure the existence of records required to run the application in every environment (production,
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
@@ -30,6 +31,6 @@ troy_map.characters.create!(name: "Odlaw", target_x: 77.0, target_y: 23.0)
 troy_map.characters.create!(name: "Woof", target_x: 77.0, target_y: 23.0)
 
 puts "--- SEED VERIFICATION LOGS ---"
-puts "Beach Map saved with ID: #{beach.id}"
-puts "Troy Map saved with ID: #{troy.id}"
+puts "Beach Map saved with ID: #{beach_map.id}"
+puts "Troy Map saved with ID: #{troy_map.id}"
 puts "------------------------------"
