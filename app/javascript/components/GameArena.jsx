@@ -40,8 +40,8 @@ export default function Home() {
           imageSrc: `/images/${char.name.toLowerCase()}.webp`,
           isFound: false,
           timeFound: null,
-          targetX: char.target_x, // 👈 Add this line!
-          targetY: char.target_y, // 👈 Add this line!
+          targetX: char.target_x,
+          targetY: char.target_y,
         }));
 
         setCharacters(formatted);
