@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <div style={{ textAlign: "center", padding: "20px" }}>
-      <h2>Choose Your Location 🕵️‍♂️</h2>
+      <h2>Choose Your Location</h2>
       <div style={{ display: "flex", gap: "20px", justifyContent: "center" }}>
         {maps.map((map) => (
           <Link
@@ -30,7 +30,6 @@ export default function Home() {
               }}
             >
               <h3>{map.name}</h3>
-              {/* Optional: Add small thumbnail images if you want */}
             </div>
           </Link>
         ))}

@@ -13,7 +13,7 @@ export function CharacterCard({ name, imageSrc, isFound, targetX, targetY }) {
 
     // 🐶 Check if this specific card belongs to Woof
     if (name.toLowerCase() === "woof") {
-      return `Look around the ${vertical} ${horizontal} side... and remember, you're only looking for his red-and-white striped tail! 🐕🔍`;
+      return `Look around the ${vertical} ${horizontal} side... and remember, you're only looking for his red-and-white striped tail!`;
     }
 
     // Default quadrant hint for Waldo, Wenda, etc.
@@ -53,7 +53,7 @@ export function CharacterCard({ name, imageSrc, isFound, targetX, targetY }) {
               padding: "2px 6px",
             }}
           >
-            {showHint ? "Hide Hint 🙈" : "Need Hint? 💡"}
+            {showHint ? "Hide Hint" : "Need Hint? 💡"}
           </button>
 
           {showHint && (

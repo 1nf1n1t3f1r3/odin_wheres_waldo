@@ -170,7 +170,7 @@ export default function Home() {
 
         triggerNotification(
           isGameOver
-            ? `Found ${data.name}! You found them all!`
+            ? `Found ${data.name}! You found them all! Scroll down to enter your score!`
             : `Found ${data.name}!`,
         );
 
@@ -253,8 +253,6 @@ export default function Home() {
 
       <hr className="my-4" />
       <CharacterContainer characters={characters} gameResult={gameResult} />
-
-      <LeaderboardTable scores={leaderboard} />
 
       {/* 🏆 CONTRATULATIONS & POST-SCORE FORM PANEL */}
       {gameResult.isOver && (
