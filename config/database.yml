@@ -19,7 +19,6 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-
 development:
   <<: *default
   database: odin_wheres_waldo_development
@@ -87,18 +86,13 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: odin_wheres_waldo_production
-    username: odin_wheres_waldo
-    password: <%= ENV["ODIN_WHERES_WALDO_DATABASE_PASSWORD"] %>
+    url: <%= ENV["DATABASE_URL"] %>
+
   cache:
     <<: *primary_production
-    database: odin_wheres_waldo_production_cache
-    migrations_paths: db/cache_migrate
+
   queue:
     <<: *primary_production
-    database: odin_wheres_waldo_production_queue
-    migrations_paths: db/queue_migrate
+
   cable:
     <<: *primary_production
-    database: odin_wheres_waldo_production_cable
-    migrations_paths: db/cable_migrate
